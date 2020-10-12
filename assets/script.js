@@ -1,7 +1,7 @@
 
 let cityName;
-let apiKey = "463d4ae3285b9201f3374fdcb03402cf"
-let apiKey2 = "463d4ae3285b92cf201f3374fdcb0340"
+let apiKey = "0124c81271bbe811af6bc4da8a0f7f56"
+// let apiKey2 = "463d4ae3285b92cf201f3374fdcb0340"
 let humidity;
 let uv;
 let temp;
@@ -10,7 +10,8 @@ let icon;
 let date;
 let timeZone;
 let condition;
-
+let cities = "";
+localStorage.setItem("cityList", cities);
 
 function getWeather(city){
   var url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`
@@ -29,15 +30,40 @@ function getWeather(city){
       timeZone = res.timezone;
       date = new Date()
       cityName = res.name;
+      
       return cityName
   })
   .then(res => {
+      let newList;
+      if(localStorage.getItem("cityList") === ""){
+          newList = res;
+      } else {
+         newList = localStorage.getItem("cityList") + "," + res 
+      }
+  
+   localStorage.setItem("cityList", newList)
       console.log(res)
-      addContent()
+      addCurrent()
+      return
+  })
+  .then(()=>{
+      addCities()
   })
 }
 
-function addContent(){
+function addCities(){
+    let cities = localStorage.getItem("cityList").split(",");
+     for ( var i = 0; i < cities.length; i++) {
+        let anchor = $("<a></a>")
+        anchor.text(cities[i])
+        anchor.attr("href", "#")
+        anchor.addClass("city-link")
+        $("#content").append(anchor)
+
+     }
+}
+function addCurrent(){
+    $("#content").empty()
     var h1 = $("<h1></h1>").text(cityName)
     $("#content").append(h1)
 
